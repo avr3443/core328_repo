@@ -5,6 +5,9 @@
  * Author : arek1
  */ 
 
+
+// Add this line just for test with smartgit client
+
 #include <avr/io.h>
 
 //#define F_CPU 16000000UL  // set i the project properties
