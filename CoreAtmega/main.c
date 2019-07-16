@@ -7,22 +7,21 @@
 
 
 // pc virtual com and usart test
+// xplained devboard -> 16 MHz
+//
+// Use #define F_CPU 16000000UL as the first line of the code.
+// Or -DF_CPU=16000000UL in C compiler symbol settings.
+//
+
 
 //TODO:
 //
-// 1.
-// If something goes wrong check usart speed, default 9600 8N1
-//
-// 2.
-// With settings as below, I have got 'b' using putty as terminal, but the putty serial speed 
-// must be set 19200 
-// Why ?
-//
+
+
+#define F_CPU 16000000UL  
+
 
 #include <avr/io.h>
-
-//#define F_CPU 16000000UL  // set in the project properties
-#define F_CPU 8000000UL  //todo: set i the project properties
 #include "util/delay.h"
 
 
@@ -37,7 +36,8 @@
 
 
 
-void serial_init() {
+void serial_init() 
+{
 	
 	//power_usart0_enable();
 	
@@ -54,11 +54,12 @@ void serial_init() {
 	
 	// configure ports double mode
 	//UCSR0A = _BV(U2X0);
-	UCSR0A=0x00;
+	UCSR0A = 0x00;
 
 	// configure the ports speed 9600
 	UBRR0H = 0x00;
-	UBRR0L = 51;
+	//UBRR0L = 51;  // it makes 19200, like for 16 MHz clock ?
+	UBRR0L = 103;  // it makes 9600, for 16 MHz clock
 
 	// asynchronous, 8N1 mode
 	UCSR0C |= 0x06;
@@ -66,34 +67,51 @@ void serial_init() {
 	// rx/tx enable
 	//UCSR0B |= _BV(RXEN0);
 	UCSR0B |= _BV(TXEN0);
-	
-	
+		
 }
 
-void serial_send(unsigned char data){
+
+void serial_send(unsigned char data)
+{
+
 	// send a single character via USART
-	while(!(UCSR0A&(1<<UDRE0))){}; //wait while previous byte is completed
+	while ( !(UCSR0A & ( 1<<UDRE0 )) ) {}; //wait while previous byte is completed
 	UDR0 = data; // Transmit data
+
 }
 
-void serial_break(){
+
+void serial_break()
+{
+
 	serial_send(10); // new line
 	serial_send(13); // carriage return
-}
-void serial_comma(){
-	serial_send(','); // comma
-	serial_send(' '); // space
+
 }
 
-void serial_number(long val){
+
+void serial_comma()
+{
+
+	serial_send(','); // comma
+	serial_send(' '); // space
+
+}
+
+
+void serial_number(long val)
+{
 	// send a number as ASCII text
 	char preVal=' ';
 	long divby=100000000; // change by dataType
-	while (divby>=1){
-		serial_send('0'+val/divby);
-		val-=(val/divby)*divby;
-		divby/=10;
+
+	while( divby >= 1 )
+	{
+		serial_send('0' + val / divby);
+		val -= (val / divby) * divby;
+		divby /= 10;
 	}
+	
 }
 
 
@@ -106,7 +124,7 @@ int main(void)
 
 	serial_init();
 	int i;
-	for(;;) {
+	for (;;) {
 		
 		//debug
 		LCD_LED_SET;
@@ -117,14 +135,13 @@ int main(void)
 		//serial_number(10140000+123); // send a big number
 		//serial_break();
 		
-		serial_send(0x62);  //B 0x42
+		serial_send(0x62);  //B 0x42, b 0x62
 		
-		_delay_ms(1000); // wait a while
-		
+		_delay_ms(1000); // wait a while		
 		
 		//debug		
 		LCD_LED_RESET;
-		_delay_ms(2000);
+		_delay_ms(1000);
 		
 	}
 
