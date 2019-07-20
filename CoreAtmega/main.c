@@ -3,15 +3,17 @@
  *
  * Created: 13.07.2019 21:20:10
  * Author : arek1
+ *
+ * Xplained Atmega 328P devboard. 16 MHz clock,
+ *
  */ 
 
 
-// Add this line just for test with smartgit client
+// It must be first line in the code.
+#define F_CPU 16000000UL  // set i the project properties
 
 #include <avr/io.h>
 
-//#define F_CPU 16000000UL  // set i the project properties
-#define F_CPU 8000000UL  // set i the project properties
 #include "util/delay.h"
 
 
